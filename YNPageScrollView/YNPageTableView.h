@@ -1,10 +1,4 @@
-//
-//  YNPageTableView.h
-//  
-//
-//  Created by liyangly on 12/10/19.
-//  Copyright © 2019 liyang. All rights reserved.
-//
+
 
 #import <UIKit/UIKit.h>
 

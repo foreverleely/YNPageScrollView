@@ -1,15 +1,9 @@
-//
-//  YNPageScrollView.m
-//  
-//
-//  Created by liyangly on 12/10/19.
-//  Copyright © 2019 liyang. All rights reserved.
-//
+
 
 #import "YNPageScrollView.h"
 
 // 是否是iPhone X系列
-#define YNPAGE_IS_iPhoneX       ([UIScreen instancesRespondToSelector:@selector(currentMode)] ?\
+#define YNPage_IS_iPhoneX       ([UIScreen instancesRespondToSelector:@selector(currentMode)] ?\
 (\
 CGSizeEqualToSize(CGSizeMake(375, 812),[UIScreen mainScreen].bounds.size)\
 ||\
@@ -22,11 +16,13 @@ CGSizeEqualToSize(CGSizeMake(896, 414),[UIScreen mainScreen].bounds.size))\
 NO)
 
 // 导航栏+状态栏高度
-#define YNPAGE_NAVBAR_HEIGHT    (YNPAGE_IS_iPhoneX ? 88.0f : 64.0f)
+#define YNPage_NAVBAR_HEIGHT    (YNPage_IS_iPhoneX ? 88.0f : 64.0f)
 
 // 屏幕宽高
-#define YNPAGE_SCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width
-#define YNPAGE_SCREEN_HEIGHT    [UIScreen mainScreen].bounds.size.height
+#define YNPage_SCREEN_WIDTH     [UIScreen mainScreen].bounds.size.width
+#define YNPage_SCREEN_HEIGHT    [UIScreen mainScreen].bounds.size.height
+
+static NSString * const cellId = @"gkScrollCellId";
 
 @interface YNPageScrollView()<UITableViewDataSource, UITableViewDelegate, YNPageListContainerViewDelegate>
 
@@ -62,7 +58,7 @@ NO)
 - (instancetype)initWithDelegate:(id<YNPageScrollViewDelegate>)delegate {
     if (self = [super init]) {
         self.delegate = delegate;
-        self.ceilPointHeight = YNPAGE_NAVBAR_HEIGHT;
+        self.ceilPointHeight = YNPage_NAVBAR_HEIGHT;
         self.validListDict = [NSMutableDictionary new];
         
         [self initSubviews];
@@ -88,7 +84,7 @@ NO)
     self.mainTableView.showsVerticalScrollIndicator = NO;
     self.mainTableView.showsHorizontalScrollIndicator = NO;
     self.mainTableView.tableHeaderView = [self.delegate headerViewInPageScrollView:self];
-    [self.mainTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
+    [self.mainTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:cellId];
     if (@available(iOS 11.0, *)) {
         self.mainTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
@@ -113,7 +109,6 @@ NO)
 }
 
 #pragma mark - Public Methods
-
 - (void)refreshHeaderView {
     self.mainTableView.tableHeaderView = [self.delegate headerViewInPageScrollView:self];
 }
@@ -175,7 +170,6 @@ NO)
 }
 
 #pragma mark - Private Methods
-
 - (void)configListViewScroll {
     [[self.delegate listViewsInPageScrollView:self] enumerateObjectsUsingBlock:^(id<YNPageListViewDelegate>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         __weak typeof(self) weakSelf = self;
@@ -370,17 +364,16 @@ NO)
 }
 
 #pragma mark - UITableViewDataSource & UITableViewDelegate
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.isLoaded ? 1 : 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-    CGFloat width  = self.frame.size.width == 0 ? YNPAGE_SCREEN_WIDTH : self.frame.size.width;
-    CGFloat height = self.frame.size.height == 0 ? YNPAGE_SCREEN_HEIGHT : self.frame.size.height;
+    CGFloat width  = self.frame.size.width == 0 ? YNPage_SCREEN_WIDTH : self.frame.size.width;
+    CGFloat height = self.frame.size.height == 0 ? YNPage_SCREEN_HEIGHT : self.frame.size.height;
     UIView *pageView = nil;
     if ([self shouldLazyLoadListView]) {
         pageView = [UIView new];
@@ -404,12 +397,11 @@ NO)
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CGFloat height = self.frame.size.height == 0 ? YNPAGE_SCREEN_HEIGHT : self.frame.size.height;
+    CGFloat height = self.frame.size.height == 0 ? YNPage_SCREEN_HEIGHT : self.frame.size.height;
     return height - self.ceilPointHeight;
 }
 
 #pragma mark - YNPageListContainerViewDelegate
-
 - (NSInteger)numberOfRowsInListContainerView:(YNPageListContainerView *)listContainerView {
     return [self.delegate numberOfListsInPageScrollView:self];
 }
@@ -428,7 +420,6 @@ NO)
 }
 
 #pragma mark - UIScrollViewDelegate
-
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     self.isBeginDragging = YES;
     

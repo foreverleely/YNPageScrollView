@@ -1,30 +1,13 @@
-//
-//  YNPageListContainerView.h
-//  
-//
-//  Created by liyangly on 12/10/19.
-//  Copyright © 2019 liyang. All rights reserved.
-//
+
 
 #import <UIKit/UIKit.h>
+#import "YNPageTableView.h"
+#import "YNPageListContainerCollectionView.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class YNPageTableView, YNPageListContainerView, YNPageListContainerCollectionView;
-
-@protocol YNPageListContainerCollectionViewGestureDelegate <NSObject>
-
-- (BOOL)pageListContainerCollectionView:(YNPageListContainerCollectionView *)collectionView gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer;
-- (BOOL)pageListContainerCollectionView:(YNPageListContainerCollectionView *)collectionView gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer;
-
-@end
-
-@interface YNPageListContainerCollectionView : UICollectionView<UIGestureRecognizerDelegate>
-
-@property (nonatomic, assign) BOOL isNestEnabled;
-@property (nonatomic, weak) id<YNPageListContainerCollectionViewGestureDelegate> gestureDelegate;
-
-@end
+@class YNPageListContainerView;
 
 @protocol YNPageListContainerViewDelegate <NSObject>
 

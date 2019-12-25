@@ -1,16 +1,8 @@
-//
-//  YNPageScrollView.h
-//  
-//
-//  Created by liyangly on 12/10/19.
-//  Copyright © 2019 liyang. All rights reserved.
-//
+
 
 #import <UIKit/UIKit.h>
 #import "YNPageTableView.h"
 #import "YNPageListContainerView.h"
-
-NS_ASSUME_NONNULL_BEGIN
 
 @class YNPageScrollView;
 
@@ -203,5 +195,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)mainScrollViewDidScroll:(UIScrollView *)scrollView;
 
 @end
-
-NS_ASSUME_NONNULL_END

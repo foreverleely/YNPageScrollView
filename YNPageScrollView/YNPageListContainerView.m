@@ -1,71 +1,8 @@
-//
-//  YNPageListContainerView.m
-//  
-//
-//  Created by liyangly on 12/10/19.
-//  Copyright © 2019 liyang. All rights reserved.
-//
+
 
 #import "YNPageListContainerView.h"
-#import "YNPageTableView.h"
 
-@implementation YNPageListContainerCollectionView
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if ([self.gestureDelegate respondsToSelector:@selector(pageListContainerCollectionView:gestureRecognizerShouldBegin:)]) {
-        return [self.gestureDelegate pageListContainerCollectionView:self gestureRecognizerShouldBegin:gestureRecognizer];
-    }else {
-        if (self.isNestEnabled) {
-            if ([gestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")]) {
-                CGFloat velocityX = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:gestureRecognizer.view].x;
-                // x大于0就是右滑
-                if (velocityX > 0) {
-                    if (self.contentOffset.x == 0) {
-                        return NO;
-                    }
-                }else if (velocityX < 0) { // x小于0是往左滑
-                    if (self.contentOffset.x + self.bounds.size.width == self.contentSize.width) {
-                        return NO;
-                    }
-                }
-            }
-        }
-    }
-    
-    if ([self panBack:gestureRecognizer]) return NO;
-    
-    return YES;
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if ([self.gestureDelegate respondsToSelector:@selector(pageListContainerCollectionView:gestureRecognizer:shouldRecognizeSimultaneouslyWithGestureRecognizer:)]) {
-        return [self.gestureDelegate pageListContainerCollectionView:self gestureRecognizer:gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:otherGestureRecognizer];
-    }
-    
-    if ([self panBack:gestureRecognizer]) return YES;
-    
-    return NO;
-}
-
-- (BOOL)panBack:(UIGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer == self.panGestureRecognizer) {
-        CGPoint point = [self.panGestureRecognizer translationInView:self];
-        UIGestureRecognizerState state = gestureRecognizer.state;
-        
-        // 设置手势滑动的位置距屏幕左边的区域
-        CGFloat locationDistance = [UIScreen mainScreen].bounds.size.width;
-        
-        if (state == UIGestureRecognizerStateBegan || state == UIGestureRecognizerStatePossible) {
-            CGPoint location = [gestureRecognizer locationInView:self];
-            if (point.x > 0 && location.x < locationDistance && self.contentOffset.x <= 0) {
-                return YES;
-            }
-        }
-    }
-    return NO;
-}
-
-@end
+static NSString * const listCellId = @"gklistCellId";
 
 @interface YNPageListContainerView()<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
@@ -97,7 +34,7 @@
     self.collectionView.bounces = NO;
     self.collectionView.dataSource = self;
     self.collectionView.delegate = self;
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
+    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:listCellId];
     if (@available(iOS 10.0, *)) {
         self.collectionView.prefetchingEnabled = NO;
     }
@@ -118,13 +55,12 @@
 }
 
 #pragma mark - UICollectionViewDataSource & UICollectionViewDelegate
-
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return [self.delegate numberOfRowsInListContainerView:self];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:listCellId forIndexPath:indexPath];
     [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
     UIView *listView = [self.delegate listContainerView:self listViewInRow:indexPath.item];
@@ -156,7 +92,6 @@
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
-
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     return self.bounds.size;
 }
