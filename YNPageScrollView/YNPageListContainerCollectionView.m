@@ -9,7 +9,7 @@
         return [self.gestureDelegate pageListContainerCollectionView:self gestureRecognizerShouldBegin:gestureRecognizer];
     }else {
         if (self.isNestEnabled) {
-            if ([gestureRecognizer isMemberOfClass:NSClassFromString(SYMASH_ENCSTR(@"UIScrollViewPanGestureRecognizer"))]) {
+            if ([gestureRecognizer isMemberOfClass:NSClassFromString(@"UIScrollViewPanGestureRecognizer")]) {
                 CGFloat velocityX = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:gestureRecognizer.view].x;
                 // x大于0就是右滑
                 if (velocityX > 0) {
